@@ -5,4 +5,5 @@ using UnityEngine;
 public interface IAnimationBase
 {
     void Move(Vector2 direction);
+    void Attack();
 }

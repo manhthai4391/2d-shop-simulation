@@ -27,6 +27,11 @@ public class PlayerAnimation : MonoBehaviour, IAnimationBase
         }
     }
 
+    public void Attack()
+    {
+        animator.SetTrigger("Attack");
+    }
+
     void Flip()
     {
         transform.rotation = isFacingLeft ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);

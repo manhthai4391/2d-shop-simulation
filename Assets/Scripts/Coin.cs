@@ -9,8 +9,8 @@ public class Coin : MonoBehaviour
     {
         if(collision.CompareTag(playerTag))
         {
-            collision.GetComponent<ICoinCollector>().Collect();
-            Destroy(gameObject);
+            collision.GetComponent<PlayerInventory>().coins++;
+            gameObject.SetActive(false);
         }
     }
 }

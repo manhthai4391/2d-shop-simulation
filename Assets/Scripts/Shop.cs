@@ -4,49 +4,54 @@ using TMPro;
 
 public class Shop : MonoBehaviour
 {
-    public IShopCustomer customer;
+    public static Shop Instance;
 
     public List<Item> items;
 
-    public GameObject itemSlotPrefab;
-
-    public GameObject itemSlotParent;
+    [SerializeField]
+    ItemsContainerUI itemsContainer;
 
     public GameObject notEnoughGoldIndicator;
 
     public TextMeshProUGUI customerGoldText;
 
-    private void Start()
+    private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
         if (items == null)
             return;
-        DisplayItems();
+        itemsContainer.InitializeItems(items.ToArray());
     }
 
-    public void DisplayItems()
-    {
-        foreach (Item item in items)
-        {
-            GameObject itemSlot = Instantiate(itemSlotPrefab, itemSlotParent.transform);
-            itemSlot.GetComponent<ItemSlotUI>().SetUp(item, this);
-        }
-    }
 
     private void OnEnable()
     {
-        if (customer != null)
-            customerGoldText.text = customer.GetCurrentGold().ToString();
+        customerGoldText.text = PlayerInventory.Instance.coins.ToString();
     }
 
-    public void CustomerBuyItem(Item item)
+    public void CustomerSellItem(Item item)
     {
-        if(customer.BuyItem(item))
+        items.Add(item);
+        itemsContainer.EnableItemSlot(item);
+        customerGoldText.text = PlayerInventory.Instance.coins.ToString();
+    }
+
+    public void BuyItem(Item item)
+    {
+        if(PlayerInventory.Instance.CanAfford(item))
         {
             //remove item from shelf
-            int index = items.IndexOf(item);
-            Destroy(itemSlotParent.transform.GetChild(index).gameObject);
+            itemsContainer.DisableItemSlot(item);
             items.Remove(item);
-            customerGoldText.text = customer.GetCurrentGold().ToString();
+            customerGoldText.text = PlayerInventory.Instance.coins.ToString();
         }
         else
         {

@@ -2,45 +2,43 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class OutfitPair
+{
+    public string Tag;
+    public SpriteRenderer spriteRenderer;
+}
+
 public class PlayerOutfitController : MonoBehaviour
 {
+    [SerializeField]
+    OutfitPair[] outfitPairs;
+
     public Dictionary<string, SpriteRenderer> outfitHashMap = new Dictionary<string, SpriteRenderer>();
+
+    Dictionary<string, Sprite> defaultOutfits = new Dictionary<string, Sprite>();
+
     // Start is called before the first frame update
     void Start()
     {
-        outfitHashMap = new Dictionary<string, SpriteRenderer> ();
-        SpriteRenderer[] allOutfits = GetComponentsInChildren<SpriteRenderer>();
-        foreach (SpriteRenderer outfit in allOutfits)
+        foreach (var pair in outfitPairs)
         {
-            if(outfitHashMap.ContainsKey(GetTag(outfit.gameObject.name)))
-            {
-                Debug.Log(GetTag(outfit.gameObject.name));
-            }
-            else
-            {
-                outfitHashMap.Add(GetTag(outfit.gameObject.name), outfit);
-            }
+            outfitHashMap.Add(pair.Tag, pair.spriteRenderer);
+            defaultOutfits.Add(pair.Tag, pair.spriteRenderer.sprite);
         }
     }
 
-    public void EquipOutfit(Sprite outfit)
-    {
-        if(outfitHashMap.ContainsKey(GetTag(outfit.name)))
+    public void EquipOutfit(Item outfit)
+    { 
+        if(outfitHashMap.ContainsKey(outfit.outfitType.ToString()))
         {
-            outfitHashMap[GetTag(outfit.name)].sprite = outfit;
-        }
-        else
-        {
-            Debug.Log("no sprite renderer with tag: " + GetTag(outfit.name));
+            outfitHashMap[outfit.outfitType.ToString()].sprite = outfit.sprite;
+            outfit.isEquipped = true;
         }
     }
 
-    string GetTag(string name)
+    public void UnequipOutfit(Item outfit)
     {
-        //this is hardcode for automation
-        //since all gameobject/sprite names are like: Rogue_leg_L_01 
-        //after this GetTag() it will return only leg_L
-        string newString = name.Remove(name.Length - 3);
-        return newString.Remove(0, 6);
+        outfitHashMap[outfit.outfitType.ToString()].sprite = defaultOutfits[outfit.outfitType.ToString()];
     }
 }

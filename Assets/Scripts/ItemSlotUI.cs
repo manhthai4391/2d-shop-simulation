@@ -7,12 +7,12 @@ public class ItemSlotUI : MonoBehaviour
     public Image image;
     public TextMeshProUGUI priceText;
 
-    public void SetUp(Item data, Shop shop)
+    public virtual void SetUp(Item data)
     {
         image.sprite = data.sprite;
         priceText.text = data.price.ToString();
         Button button = GetComponent<Button>();
         button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(() => shop.CustomerBuyItem(data));
+        button.onClick.AddListener(() => Shop.Instance.BuyItem(data));
     }
 }
